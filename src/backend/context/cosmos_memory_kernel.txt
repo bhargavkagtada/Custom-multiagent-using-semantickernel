@@ -1,0 +1,66 @@
+Summarized conversation historyBased on my analysis of the `cosmos_memory_kernel.py` file, here are the key steps and functionalities:
+
+## Key Steps in cosmos_memory_kernel.py
+
+### 1. **Initialization & Setup**
+- **`__init__`**: Sets up the CosmosMemoryContext with session ID, user ID, and Cosmos DB configuration
+- **`initialize()`**: Creates the Cosmos DB client and container using Azure credentials
+- **`ensure_initialized()`**: Ensures the container is ready before any operations
+
+### 2. **Core Data Management Operations**
+
+#### **Generic Item Operations**
+- **`add_item()`**: Adds any BaseDataModel item to Cosmos DB with datetime serialization
+- **`update_item()`**: Updates existing items using upsert operation
+- **`get_item_by_id()`**: Retrieves items by ID and partition key
+- **`query_items()`**: Executes SQL queries against Cosmos DB and returns typed model instances
+
+#### **Session Management**
+- **`add_session()`**: Stores session data
+- **`get_session()`**: Retrieves session by session_id
+- **`get_all_sessions()`**: Gets all user sessions
+
+#### **Plan Management**
+- **`add_plan()`** / **`update_plan()`**: Store and update execution plans
+- **`get_plan_by_session()`**: Gets plan associated with a session
+- **`get_plan_by_plan_id()`**: Retrieves plan by its ID
+- **`get_all_plans()`**: Gets all user plans ordered by timestamp
+
+#### **Step Management**
+- **`add_step()`** / **`update_step()`**: Store and update individual plan steps
+- **`get_steps_by_plan()`**: Gets all steps for a specific plan
+- **`get_step()`**: Retrieves individual step by ID
+
+#### **Agent Message Management** (Key for UI Display)
+- **`add_agent_message()`**: Stores agent output messages to Cosmos DB
+- **`get_agent_messages_by_session()`**: Retrieves all agent messages for a session (ordered by timestamp)
+
+### 3. **Chat Message Handling**
+- **`add_message()`**: Stores chat messages with buffering
+- **`get_messages()`**: Retrieves recent chat messages for the session
+- **`get_chat_history()`**: Converts messages to ChatHistory object
+- **`save_chat_history()`**: Saves entire chat history
+
+### 4. **Generic Data Querying**
+- **`get_data_by_type()`**: Queries documents by data_type, session_id, and user_id
+- **`get_data_by_type_and_session_id()`**: Similar but with explicit session_id parameter
+
+### 5. **Memory Store Operations** (Semantic Kernel Integration)
+- **Collection Management**: `create_collection()`, `get_collections()`, `delete_collection()`
+- **Memory Records**: `upsert_memory_record()`, `get_memory_record()`, `remove_memory_record()`
+- **Batch Operations**: `upsert_batch()`, `get_batch()`, `remove_batch()`
+- **Similarity Search**: `get_nearest_match()`, `get_nearest_matches()` using embedding vectors
+
+### 6. **Data Cleanup Operations**
+- **`delete_item()`**: Removes individual items
+- **`delete_items_by_query()`**: Bulk deletion using SQL queries
+- **`delete_all_messages()`**: Removes all messages of a specific type
+- **`delete_all_items()`**: General cleanup method
+
+## Key Data Flow for Agent Output Display
+
+1. **Agent generates output** → `add_agent_message()` stores it as an `AgentMessage` in Cosmos DB
+2. **Backend API** → `get_agent_messages_by_session()` retrieves messages for a session
+3. **Frontend** → Calls backend endpoints to fetch and display these messages in the UI
+
+The file serves as the central data persistence layer, handling all CRUD operations for the multi-agent system's data models while providing both generic document storage and specialized memory operations for the Semantic Kernel framework.
