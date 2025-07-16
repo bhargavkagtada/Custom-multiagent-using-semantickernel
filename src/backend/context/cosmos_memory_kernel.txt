@@ -1,3 +1,111 @@
+Version 2:
+Looking at the cosmos_memory_kernel.py file, here are the key steps and functionality organized by purpose:
+
+Core Architecture
+1. Class Structure
+DateTimeEncoder: Custom JSON encoder for datetime serialization
+CosmosMemoryContext: Main class extending MemoryStoreBase from Semantic Kernel
+MODEL_CLASS_MAPPING: Maps data types to their corresponding model classes
+
+2. Initialization & Connection Management
+__init__() → initialize() → ensure_initialized()
+Sets up session/user context and Cosmos DB connection parameters
+Creates Cosmos client with DefaultAzureCredential
+Establishes database and container connections
+Uses /session_id as partition key strategy
+
+Core Functionality Categories
+
+3. Session Management
+add_session() - Create new chat sessions
+get_session() - Retrieve session by ID
+get_all_sessions() - List all sessions
+
+4. Plan Management (Multi-agent planning)
+add_plan() / update_plan() - CRUD operations for AI plans
+get_plan_by_session() / get_plan_by_plan_id() - Retrieve plans
+get_all_plans() - List all user plans
+
+5. Step Management (Plan execution tracking)
+add_step() / update_step() - Track individual plan steps
+get_steps_by_plan() - Get all steps for a plan
+get_step() - Retrieve specific step
+
+6. Agent Message Handling
+add_agent_message() - Store messages from AI agents
+get_agent_messages_by_session() - Retrieve conversation history
+
+7. Chat Message Operations
+add_message() - Add to both memory buffer and Cosmos DB
+get_messages() - Retrieve recent chat messages
+get_chat_history() - Convert to Semantic Kernel ChatHistory
+save_chat_history() - Persist entire conversation
+
+8. Memory Store Interface (Semantic Kernel compatibility)
+Collections: create_collection(), get_collections(), delete_collection()
+Records: upsert(), get(), remove(), with batch operations
+Vector Search: get_nearest_match(), get_nearest_matches()
+Embeddings: Store and retrieve vector embeddings for RAG
+
+9. Generic Data Operations
+add_item() / update_item() - Generic CRUD for BaseDataModel objects
+query_items() - SQL-like querying with parameterized queries
+get_data_by_type() - Filter by data type and session
+delete_items_by_query() - Bulk delete operations
+
+10. Advanced Querying & Search
+SQL-like queries with parameterized inputs
+Vector similarity search using cosine similarity
+Type-specific data retrieval with model validation
+Time-ordered results using _ts timestamp
+
+Key Technical Features
+
+11. Data Persistence Strategy
+Multi-model storage: Sessions, Plans, Steps, Messages, Memory records
+Partition strategy: Uses session_id for optimal performance
+Data typing: Uses data_type field to differentiate record types
+Timestamps: Leverages Cosmos DB _ts for ordering
+
+12. Error Handling & Resilience
+Comprehensive exception handling with logging
+Graceful degradation when Cosmos DB unavailable
+Initialization retry logic
+Connection state management
+
+13. Memory Management
+In-memory message buffering (configurable size)
+Automatic buffer size maintenance
+Dual storage (memory + persistent)
+
+14. Integration Points
+Semantic Kernel: Implements MemoryStoreBase interface
+Azure Cosmos DB: Native async operations
+Pydantic Models: Type-safe data validation
+Azure Identity: Managed identity authentication
+
+Workflow Steps
+15. Typical Usage Flow
+Initialize: Create CosmosMemoryContext with session/user IDs
+Connect: Call initialize() to establish Cosmos DB connection
+Store Data: Use specific methods (add_session, add_plan, etc.)
+Query Data: Retrieve using type-specific or generic query methods
+Vector Operations: Store/search embeddings for RAG scenarios
+Cleanup: Context manager handles connection cleanup
+
+This file essentially provides a complete data persistence layer for a multi-agent AI system, handling everything from conversation storage to plan execution tracking, while maintaining compatibility with the Semantic Kernel framework.
+
+
+
+
+
+
+
+
+Version 1:
+
+
+
 Summarized conversation historyBased on my analysis of the `cosmos_memory_kernel.py` file, here are the key steps and functionalities:
 
 ## Key Steps in cosmos_memory_kernel.py

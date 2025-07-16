@@ -1,0 +1,7 @@
+> git checkout -q --track origin/bk-dev-custom
+warning: safe.directory 'C:/Users/bkagtada/source/aidw-gtm' not absolute
+warning: safe.directory 'C:/Users/bkagtada/source/ai-search-at-scale' not absolute
+error: The following untracked working tree files would be overwritten by checkout:
+	src/backend/context/cosmos_memory_kernel.txt
+Please move or remove them before you switch branches.
+Aborting
